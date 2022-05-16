@@ -77,6 +77,22 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                     pred = zoom(out, (x / patch_size[0], y / patch_size[1]), order=0)
                 else:
                     pred = out
+                
+                if (pred == 8):
+                    pred = 1
+                elif (pred == 4):
+                    pred = 2
+                elif (pred == 2):
+                    pred = 4
+                elif (pred == 6):
+                    pred = 5
+                elif (pred == 11):
+                    pred = 6
+                elif (pred == 1):
+                    pred = 7
+                elif (pred == 7):
+                    pred = 8
+                    
                 prediction[ind] = pred
     else:
         input = torch.from_numpy(image).unsqueeze(
