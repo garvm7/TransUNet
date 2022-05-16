@@ -16,25 +16,25 @@ from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
-                    default='../data/Synapse/test_vol_h5', help='root dir for validation volume data')  # for acdc volume_path=root_dir
+                    default='/content/data/Synapse/test_vol_h5', help='root dir for validation volume data')  # for acdc volume_path=root_dir
 parser.add_argument('--dataset', type=str,
                     default='Synapse', help='experiment_name')
 parser.add_argument('--num_classes', type=int,
-                    default=4, help='output channel of network')
+                    default=14, help='output channel of network')
 parser.add_argument('--list_dir', type=str,
-                    default='./lists/lists_Synapse', help='list dir')
+                    default='/content/lists/lists_Synapse', help='list dir')
 
-parser.add_argument('--max_iterations', type=int,default=20000, help='maximum epoch number to train')
-parser.add_argument('--max_epochs', type=int, default=30, help='maximum epoch number to train')
-parser.add_argument('--batch_size', type=int, default=24,
+parser.add_argument('--max_iterations', type=int,default=5000, help='maximum epoch number to train')
+parser.add_argument('--max_epochs', type=int, default=25, help='maximum epoch number to train')
+parser.add_argument('--batch_size', type=int, default=4,
                     help='batch_size per gpu')
-parser.add_argument('--img_size', type=int, default=224, help='input patch size of network input')
+parser.add_argument('--img_size', type=int, default=512, help='input patch size of network input')
 parser.add_argument('--is_savenii', action="store_true", help='whether to save results during inference')
 
 parser.add_argument('--n_skip', type=int, default=3, help='using number of skip-connect, default is num')
-parser.add_argument('--vit_name', type=str, default='ViT-B_16', help='select one vit model')
+parser.add_argument('--vit_name', type=str, default='R50-ViT-B_16', help='select one vit model')
 
-parser.add_argument('--test_save_dir', type=str, default='../predictions', help='saving prediction as nii!')
+parser.add_argument('--test_save_dir', type=str, default='/content/predictions', help='saving prediction as nii!')
 parser.add_argument('--deterministic', type=int,  default=1, help='whether use deterministic training')
 parser.add_argument('--base_lr', type=float,  default=0.01, help='segmentation network learning rate')
 parser.add_argument('--seed', type=int, default=1234, help='random seed')
@@ -80,9 +80,9 @@ if __name__ == "__main__":
     dataset_config = {
         'Synapse': {
             'Dataset': Synapse_dataset,
-            'volume_path': '../data/Synapse/test_vol_h5',
-            'list_dir': './lists/lists_Synapse',
-            'num_classes': 9,
+            'volume_path': '/content/data/Synapse/test_vol_h5',
+            'list_dir': '/content/lists/lists_Synapse',
+            'num_classes': 14,
             'z_spacing': 1,
         },
     }
@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # name the same snapshot defined in train script!
     args.exp = 'TU_' + dataset_name + str(args.img_size)
-    snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
+    snapshot_path = "/content/model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     net.load_state_dict(torch.load(snapshot))
     snapshot_name = snapshot_path.split('/')[-1]
 
-    log_folder = './test_log/test_log_' + args.exp
+    log_folder = '/content/test_log/test_log_' + args.exp
     os.makedirs(log_folder, exist_ok=True)
     logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     logging.info(snapshot_name)
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions'
+        args.test_save_dir = '/content/predictions'
         test_save_path = os.path.join(args.test_save_dir, args.exp, snapshot_name)
         os.makedirs(test_save_path, exist_ok=True)
     else:
